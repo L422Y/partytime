@@ -1,13 +1,17 @@
 <template>
   <div class="login">
-    <button class="btn login__with-spotify" @click="startSpotifyAuth">Log in with Spotify</button>
+    <button
+      class="btn login__with-spotify"
+      @click="startSpotifyAuth"
+    >
+      Log in with Spotify
+    </button>
   </div>
 </template>
 
 <script lang="ts" setup>
 const startSpotifyAuth = () => {
-  const authUrl = useSpotifyAuthURL()
-  window.location.href = authUrl
+  window.location.href = useSpotifyAuthURL()
 }
 </script>
 

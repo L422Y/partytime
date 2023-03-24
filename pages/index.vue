@@ -8,9 +8,12 @@ const appStore = useAppStore()
 
 <template>
   <ClientOnly>
-    <PlaylistsView v-if="appStore.spotifyUser && appStore.spotifyAccessToken" ref="pv"/>
+    <PlaylistsView
+      v-if="appStore.spotifyUser && appStore.spotifyAccessToken"
+      ref="pv"
+    />
     <div v-else>
-      <LoginView/>
+      <LoginView />
     </div>
   </ClientOnly>
 </template>

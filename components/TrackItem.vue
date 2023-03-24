@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import type { ISpotifyPlaylistTrack } from "@/types/spotify"
+import { ISpotifyPlaylistTrack } from "@/types/spotify"
 import { computed } from "vue"
 
 const props = defineProps<{ track: ISpotifyPlaylistTrack }>()

@@ -1,5 +1,5 @@
 <template>
-    <NuxtLayout/>
+  <NuxtLayout />
 </template>
 <script lang="ts" setup>
 import { useAppStore } from "~/stores/app"

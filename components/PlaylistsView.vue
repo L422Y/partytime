@@ -8,10 +8,19 @@ const playlists = computed(() => appStore.playlists)
 <template>
   <div v-if="appStore">
     <ul>
-      <PlaylistTile v-for="playlist in playlists.items" :key="playlist.id" :playlist="playlist"/>
+      <PlaylistTile
+        v-for="playlist in playlists.items"
+        :key="playlist.id"
+        :playlist="playlist"
+      />
     </ul>
   </div>
-  <div v-else id="loading">Loading playlists...</div>
+  <div
+    v-else
+    id="loading"
+  >
+    Loading playlists...
+  </div>
 </template>
 <style lang="scss">
 ul {

@@ -2,13 +2,11 @@
 import { useAppStore } from "@/stores/app"
 import { computed, onBeforeUnmount, ref } from "vue"
 
-const $router = useRouter()
 const {playlistId} = useRoute().params
-
+const $router = useRouter()
 const appStore = useAppStore()
 const response = await useSpotifyGetPlaylist(playlistId)
 const playlist = computed(() => response?.data?.value)
-const tracks = computed(() => playlist?.tracks)
 const playlistLink = computed(() => playlist?.value?.external_urls?.spotify)
 const coverImage = computed(() => {
   if (playlist?.value?.images?.length > 0) {
@@ -23,14 +21,16 @@ const keyHandler = (e) => {
     $router.push("/")
   }
 }
+if (process.client) {
 
-onBeforeMount(() => {
-  window.addEventListener("keydown", keyHandler)
-})
+  onMounted(() => {
+    window.addEventListener("keydown", keyHandler)
+  })
 
-onBeforeUnmount(() => {
-  window.removeEventListener("keydown", keyHandler)
-})
+  onBeforeUnmount(() => {
+    window.removeEventListener("keydown", keyHandler)
+  })
+}
 
 </script>
 <template>
