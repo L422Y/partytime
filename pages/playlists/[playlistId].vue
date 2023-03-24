@@ -34,31 +34,35 @@ if (process.client) {
 
 </script>
 <template>
-  <NuxtLink class="playlist-view__closer" to="/">&times;</NuxtLink>
-  <aside ref="playlistView" class="playlist-view">
-    <div class="playlist-view__wrapper">
-      <div>
-        <header class="playlist-view__header">
-          <h1 v-if="playlist" class="playlist-view__h1">
-            <a :href="playlistLink">{{ playlist.name }}</a>
-          </h1>
-          <p v-if="playlist?.description?.length > 0">{{ playlist?.description }}</p>
-          <picture class="playlist-view__image">
-            <img v-if="playlist" :src="coverImage" alt=""/>
-          </picture>
-        </header>
-
-      </div>
-      <div class="playlist-view__inside">
-
-        <ol v-if="playlist?.tracks?.items" class="playlist-view__tracks">
-          <TrackItem v-for="track in playlist.tracks?.items" :key="track.id" :track="track"/>
-        </ol>
-        <div v-else id="loading">Loading...</div>
-      </div>
-
-    </div>
-  </aside>
+  <ClientOnly>
+    <template v-if="appStore.spotifyAccessToken">
+      <NuxtLink class="playlist-view__closer" to="/">&times;</NuxtLink>
+      <aside ref="playlistView" class="playlist-view">
+        <div class="playlist-view__wrapper">
+          <div>
+            <header class="playlist-view__header">
+              <h1 v-if="playlist" class="playlist-view__h1">
+                <a :href="playlistLink">{{ playlist.name }}</a>
+              </h1>
+              <p v-if="playlist?.description?.length > 0">{{ playlist?.description }}</p>
+              <picture class="playlist-view__image">
+                <img v-if="playlist" :src="coverImage" alt=""/>
+              </picture>
+            </header>
+          </div>
+          <div class="playlist-view__inside">
+            <ol v-if="playlist?.tracks?.items" class="playlist-view__tracks">
+              <TrackItem v-for="track in playlist.tracks?.items" :key="track.id" :track="track"/>
+            </ol>
+            <div v-else id="loading">Loading...</div>
+          </div>
+        </div>
+      </aside>
+    </template>
+    <template v-else>
+      <LoginView/>
+    </template>
+  </ClientOnly>
 </template>
 <style lang="scss">
 $breakpoint-tablet: 800px;
