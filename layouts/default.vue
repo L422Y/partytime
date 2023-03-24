@@ -1,11 +1,5 @@
 <template>
-  <NuxtPage/>
+  <main id="app">
+    <NuxtPage/>
+  </main>
 </template>
-
-<script setup>
-
-</script>
-
-<style lang="scss" scoped>
-
-</style>
