@@ -1,8 +1,8 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
 const privateRuntimeConfig = import("./nuxt.private.config")
 export default defineNuxtConfig({
-    modules: ['@pinia/nuxt'],
-    app: {},
+    modules: ["@pinia/nuxt"],
+    css: ['@/src/assets/scss/base.scss'],
     devServer: {
         port: 5173
     },
