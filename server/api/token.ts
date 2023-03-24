@@ -1,43 +1,33 @@
-import {useRequestBody} from "nitropack/dist/runtime/utils";
-import {Buffer} from "unenv/runtime/node/buffer";
-
 export default defineEventHandler(async (event) => {
-    const {spotifyClientId, spotifyRedirectURL} = useRuntimeConfig().public
+    const {spotifyClientId, spotifyCallbackURL} = useRuntimeConfig().public
     const {spotifyClientSecret} = useRuntimeConfig()
-    if (spotifyClientId && spotifyClientSecret && spotifyRedirectURL) {
+    if (spotifyClientId && spotifyClientSecret && spotifyCallbackURL) {
         const tokenUrl = `https://accounts.spotify.com/api/token`
         const body = await readBody(event)
-        const requestBody = new URLSearchParams({
-            grant_type: body?.grant_type || 'authorization_code',
-            refresh_token: body?.refresh_token,
+        const requestBody = {
+            grant_type: body?.grant_type || "authorization_code",
             code: body?.code,
-            redirect_uri: spotifyRedirectURL,
-        })
+            redirect_uri: spotifyCallbackURL,
+            client_id: spotifyClientId,
+            client_secret: spotifyClientSecret
+        }
 
-        const base64Credentials = btoa(`${spotifyClientId}:${spotifyClientSecret}`);
+        if (body?.refresh_token) {
+            requestBody.refresh_token = body?.refresh_token
+        }
 
-        const apiResponse = await fetch(tokenUrl, {
-            method: 'POST',
+        const searchBody = new URLSearchParams(requestBody).toString()
+        return await $fetch(tokenUrl, {
+            method: "POST",
             headers: {
-                'Content-Type': 'application/x-www-form-urlencoded',
-                'Authorization': `Basic ${base64Credentials}`,
+                "Content-Type": "application/x-www-form-urlencoded",
             },
-            body: requestBody,
+            body: searchBody
         })
-            .then(async (response) => {
-                if (!response.ok) {
-                    throw new Error(`HTTP error ${response.status}`);
-                }
-                const data = await response.json();
-                return data
-            })
+            .then((response) => response)
             .catch((error) => {
-                return {error: error.message};
-            });
-
-
-        console.log(apiResponse)
-        return {...apiResponse, req: {...requestBody}}
+                return {error: error}
+            })
 
     }
 })
