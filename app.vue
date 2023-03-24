@@ -2,12 +2,13 @@
   <NuxtLayout/>
 </template>
 <script lang="ts" setup>
+
+</script>
+<script lang="ts">
 import { useAppStore } from "~/stores/app"
 
 const appStore = useAppStore()
 
-</script>
-<script lang="ts">
 if (process.client) {
   const lsPlaylist = localStorage?.getItem("current_playlist")
   const lsPlaylists = localStorage?.getItem("playlists")
