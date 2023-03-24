@@ -1,13 +1,13 @@
 export default defineEventHandler(async (event) => {
-  const {spotifyClientId, spotifyCallbackURL} = useRuntimeConfig().public
+  const {spotifyClientId, spotifyCallbackUrl} = useRuntimeConfig().public
   const spotifyClientSecret = process.env.NUXT_SPOTIFY_CLIENT_SECRET
-  if (spotifyClientId && spotifyClientSecret && spotifyCallbackURL) {
+  if (spotifyClientId && spotifyClientSecret && spotifyCallbackUrl) {
     const tokenUrl = `https://accounts.spotify.com/api/token`
     const body = await readBody(event)
     const requestBody = {
       grant_type: body?.grant_type || "authorization_code",
       code: body?.code,
-      redirect_uri: spotifyCallbackURL,
+      redirect_uri: spotifyCallbackUrl,
       client_id: spotifyClientId,
       client_secret: spotifyClientSecret
     }
