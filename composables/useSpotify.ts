@@ -14,24 +14,21 @@ export const useSpotifyAPI = async (path, params, retry = true) => {
       console.error("ERROR: ", error.value.message)
       if (retry) {
         // watch(error, async (error) => {
-        if (error.value.statusCode === 401) {
-          await useSpotifyAuthRefresh()
-          await useSpotifyAPI(path, params, false)
-        }
+        // if (error.value.statusCode === 401) {
+        //   await useSpotifyAuthRefresh()
+        //   await useSpotifyAPI(path, params, false)
+        // }
         // })
       }
     }
-    if (data?.value) {
-      console.log({data, error})
-    }
-    if (pending?.value) {
-      console.log({pending})
-    }
+
+    console.log(path,{error, data, pending})
+
     return {error, data, pending}
   }).catch((error) => {
     console.error("ERROR: ", error.message)
+    return {error: error.m}
   })
-
   return response
 }
 export const useSpotifyGetUser = async (userId?: string) => {
@@ -43,26 +40,43 @@ export const useSpotifyGetUser = async (userId?: string) => {
 
 export const useSpotifyGetPlaylists = async () => {
   const appStore = useAppStore()
-  if (appStore.spotifyAccessToken && appStore.spotifyUser) {
-    return useSpotifyAPI(`/users/${appStore.spotifyUser.id}/playlists`, {
-      limit: 50,
-      offset: 0
-    }).then((response) => {
-      if (response) {
-        appStore.setPlaylists(response.data.value)
-        return response
-      }
-    })
+  if (!( appStore.spotifyAccessToken && appStore.spotifyUser )) {
+    console.log("no access token or user")
+    await useSpotifyAuthRefresh()
   }
+  return useSpotifyAPI(`/users/${appStore.spotifyUser.id}/playlists`, {
+    limit: 50,
+    offset: 0
+  }).then((response) => {
+    if (response) {
+      appStore.setPlaylists(response.data.value)
+      return response
+    }
+  })
+
 }
 export const useSpotifyGetPlaylist = async (playlistId: string) => {
   const appStore = useAppStore()
-  if (appStore.spotifyAccessToken && appStore.spotifyUser) {
+  if (await useSpotifyAuthCheck()) {
     return useSpotifyAPI(`/playlists/${playlistId}`, {}).then((response) => {
       if (response) {
         appStore.setCurrentPlaylist(response?.data?.value)
         return response
       }
     })
+  }
+}
+
+export const useSpotifyAuthCheck = async () => {
+  const appStore = useAppStore()
+  if (process.client) {
+    if (!( appStore.spotifyAccessToken && appStore.spotifyUser )) {
+      await useSpotifyAuthRefresh()
+      if (appStore.spotifyAccessToken) {
+        return true
+      }
+    } else {
+      return true
+    }
   }
 }
