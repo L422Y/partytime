@@ -22,7 +22,7 @@ export const useSpotifyAPI = async (path, params, retry = true) => {
       }
     }
 
-    console.log(path,{error, data, pending})
+    console.log(path, {error, data, pending})
 
     return {error, data, pending}
   }).catch((error) => {

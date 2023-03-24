@@ -13,7 +13,7 @@ const appStore = useAppStore()
       ref="pv"
     />
     <div v-else>
-      <LoginView />
+      <LoginView/>
     </div>
   </ClientOnly>
 </template>
