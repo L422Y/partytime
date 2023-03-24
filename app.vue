@@ -2,9 +2,6 @@
   <NuxtLayout/>
 </template>
 <script lang="ts" setup>
-
-</script>
-<script lang="ts">
 import { useAppStore } from "~/stores/app"
 
 const appStore = useAppStore()
