@@ -1,5 +1,11 @@
 {
+  "name": "shpotify",
   "private": true,
+  "version": "1.0.0",
+  "license": "MIT",
+  "engines": {
+    "node": ">=16.0.0"
+  },
   "packageManager": "pnpm@7.29.1",
   "scripts": {
     "build": "nuxt build",
@@ -8,6 +14,23 @@
     "preview": "nuxt preview",
     "postinstall": "nuxt prepare"
   },
+  "author": {
+    "name": "l422y",
+    "email": "l422y@l422y.com"
+  },
+  "contributors": [
+    {
+      "name": "l422y",
+      "email": "l422y@l422y.com"
+    }
+  ],
+  "description": "Nuxt 3 + Pinia + TypeScript + Spotify API",
+  "keywords": [
+    "nuxt",
+    "nuxt3",
+    "pinia",
+    "typescript"
+  ],
   "devDependencies": {
     "nuxt": "^3.3.1",
     "sass": "^1.59.3",
