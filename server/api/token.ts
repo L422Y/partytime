@@ -24,19 +24,22 @@ export default defineEventHandler(async (event) => {
     }
 
     const searchBody = new URLSearchParams(requestBody).toString()
-    return await $fetch(tokenUrl, {
+    const response = await fetch(tokenUrl, {
       method: "POST",
       headers: {
         "Content-Type": "application/x-www-form-urlencoded",
       },
       body: searchBody
     })
-      .then((response) => response)
       .catch((error) => {
         return {error: error}
       })
+    return await response.json()
   } else {
-    return {error: "Missing spotify client id or secret", env: process.env}
+    return {
+      error: "Missing spotify client id or secret",
+      spotifyClientId, spotifyCallbackUrl
+    }
   }
 
 })

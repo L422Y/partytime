@@ -2,9 +2,9 @@
   <NuxtLayout/>
 </template>
 <script lang="ts" setup>
-import { useAppStore } from "~/stores/app"
-import { usePlayerStore } from "~/stores/player"
-import { useSpotifyGetPlaylists, useSpotifyGetUser } from "~/composables/useSpotify"
+import {useAppStore} from "~/stores/app"
+import {usePlayerStore} from "~/stores/player"
+import {useSpotifyGetPlaylists, useSpotifyGetUser} from "~/composables/useSpotify"
 
 const appStore = useAppStore()
 const player = usePlayerStore()
@@ -21,6 +21,16 @@ if (process.client) {
   appStore.$state.spotifyAccessToken = localStorage?.getItem("spotify_access_token") || ""
   appStore.$state.spotifyRefreshToken = localStorage?.getItem("spotify_refresh_token") || ""
 
+  const playlistsCheck = (value: any) => {
+    {
+      if (value.items.length === 0) {
+        useRouter().push("/now-playing")
+      }
+    }
+  }
+  const playlists = computed(() => appStore.$state.playlists)
+  watch(playlists, (value) => playlistsCheck)
+  playlistsCheck(appStore.playlists)
 
   let refreshInterval: any = null
   useNuxtApp().hook("spotify:authenticated",
@@ -37,11 +47,7 @@ if (process.client) {
       } else {
         clearInterval(refreshInterval)
       }
-
-      console.log("spotify:authenticated", isAuthenticated)
     })
   await useSpotifyAuthRefresh()
-
-
 }
 </script>

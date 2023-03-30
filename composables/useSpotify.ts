@@ -47,14 +47,14 @@ export const useSpotifyGetUser = async (userId?: string) => {
     })
 }
 
-export const useSpotifyGetPlaylists = async () => {
+export const useSpotifyGetPlaylists = async (userId?: string) => {
   const appStore = useAppStore()
   if (!( appStore.$state.spotifyAccessToken && appStore.$state.spotifyUser )) {
     console.log("no access token or user", appStore.$state)
     await useSpotifyAuthRefresh()
   }
   if (appStore.spotifyUser?.id) {
-    return useSpotifyAPI(`/users/${appStore.spotifyUser.id}/playlists`,
+    return useSpotifyAPI(userId ? `/users/${userId}/playlists` : `/me/playlists`,
       {
         limit: "50",
         offset: "0"
