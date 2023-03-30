@@ -6,16 +6,18 @@ import { usePlayerStore } from "~/stores/player"
 const pv = ref()
 const appStore = useAppStore()
 onMounted(() => {
+  usePlayerStore().$state.nowPlayingMinimized = true
+})
+onUnmounted(() => {
   usePlayerStore().$state.nowPlayingMinimized = false
 })
 </script>
 
 <template>
   <ClientOnly>
-    <PlaylistsView
-      v-if="appStore.spotifyUser && appStore.spotifyAccessToken"
-      ref="pv"
-    />
+    <template v-if="appStore.isAuthenticated">
+      <NowPlaying mode="big"/>
+    </template>
     <div v-else>
       <LoginView/>
     </div>
