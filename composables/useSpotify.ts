@@ -1,14 +1,20 @@
 import { useAppStore } from "@/stores/app"
 import { useSpotifyAuthRefresh } from "@/composables/useSpotifyAuth"
 
-export const useSpotifyAPI = async (path: any, params: { [key: string]: string }, retry: boolean = true) => {
+export const useSpotifyAPI = async (path: any, params: { [key: string]: string } = {}, retry: boolean = true) => {
   const appStore = useAppStore()
   const url = new URL(`https://api.spotify.com/v1${path}`)
   Object.entries(params).forEach(([key, value]) => url.searchParams.append(key, value))
 
-  return await useFetch(url.toString(), {
+  if (appStore.$state.spotifyAccessToken === null) {
+    return
+  }
+  return useFetch(url.toString(), {
     method: "GET",
-    headers: {Authorization: `Bearer ${appStore.spotifyAccessToken}`},
+    // headers: {
+    //   "Authorization": "Basic " + btoa(client_id + ":" + client_secret)
+    // },
+    headers: {Authorization: `Bearer ${appStore.$state.spotifyAccessToken}`},
   }).then(async (response) => {
     const {error} = response
     if (error?.value && error.value.statusCode === 401) {
@@ -20,6 +26,8 @@ export const useSpotifyAPI = async (path: any, params: { [key: string]: string }
         await useSpotifyAPI(path, params, false)
       }
     }
+    useAppStore().$state.isAuthenticated = true
+
     return response
   }).catch((response) => {
     console.error("ERROR: ", response)
@@ -31,8 +39,9 @@ export const useSpotifyGetUser = async (userId?: string) => {
   const response = await useSpotifyAPI(userId ? `/users/${userId}` : "/me", {}).then(
     async (response) => {
       if (response) {
+        useAppStore().$state.isAuthenticated = true
+
         appStore.setSpotifyUser(response.data.value)
-        await useSpotifyGetPlaylists()
         return response
       }
     })

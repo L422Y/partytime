@@ -28,7 +28,6 @@ const useSpotifyAuthResponse = async (response: any) => {
   } else {
     // Handle the response from your server
     await appStore.useAccessAuthorizationResponse(response)
-    await useSpotifyGetUser()
   }
 }
 export const useSpotifyAuthGetAccessToken = async (authorizationCode: string) => {
