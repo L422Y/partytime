@@ -1,7 +1,10 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
   modules: ["@pinia/nuxt"],
-  css: ["@/src/assets/scss/base.scss"],
+  css: [
+    "@/src/assets/scss/base.scss",
+    "@fortawesome/fontawesome-svg-core/styles.css"
+  ],
   devServer: {
     port: 5173
   },
