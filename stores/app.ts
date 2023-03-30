@@ -1,6 +1,7 @@
 import { defineStore } from "pinia"
 import { ref } from "vue"
 import { ISpotifyPlaylist, ISpotifyUser } from "~/types/spotify"
+import { useSpotifyAPI } from "#imports"
 
 export const useAppStore = defineStore("appStore", () => {
   const showPlaylist = ref(false)
@@ -11,6 +12,11 @@ export const useAppStore = defineStore("appStore", () => {
   const spotifyAccessToken = ref("")
   const spotifyRefreshToken = ref("")
   const isAuthenticated = ref(false)
+
+  watch(isAuthenticated,
+    async (value) => {
+      await useNuxtApp().callHook("spotify:authenticated", value)
+    })
 
   const setSpotifyUser = (user: ISpotifyUser) => {
     localStorage?.setItem("spotify_user", JSON.stringify(user))
@@ -60,6 +66,7 @@ export const useAppStore = defineStore("appStore", () => {
 
     }
   }
+
 
   return {
     spotifyUser,
