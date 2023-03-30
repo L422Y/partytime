@@ -1,7 +1,6 @@
 import { defineStore } from "pinia"
 import { ref } from "vue"
 import { ISpotifyPlaylist, ISpotifyUser } from "~/types/spotify"
-import { useSpotifyAPI } from "#imports"
 
 export const useAppStore = defineStore("appStore", () => {
   const showPlaylist = ref(false)
