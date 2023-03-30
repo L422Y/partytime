@@ -10,20 +10,14 @@ export const useSpotifyAPI = async (path, params, retry = true) => {
     method: "GET",
     headers: {Authorization: `Bearer ${appStore.spotifyAccessToken}`},
   }).then(async ({error, data, pending}) => {
-    if (error?.value) {
+    if (error?.value && error.value.statusCode === 401)
       console.error("ERROR: ", error.value.message)
       if (retry) {
-        // watch(error, async (error) => {
-        // if (error.value.statusCode === 401) {
-        //   await useSpotifyAuthRefresh()
-        //   await useSpotifyAPI(path, params, false)
-        // }
-        // })
-      }
+        if (error.value?.statusCode === 401) {
+          await useSpotifyAuthRefresh()
+          await useSpotifyAPI(path, params, false)
+        }
     }
-
-    console.log(path, {error, data, pending})
-
     return {error, data, pending}
   }).catch((error) => {
     console.error("ERROR: ", error.message)
