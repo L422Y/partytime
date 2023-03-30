@@ -40,6 +40,7 @@ if (process.client) {
           await useSpotifyGetUser()
           await useSpotifyGetPlaylists()
           player.refreshPlayer()
+          playlistsCheck(appStore.playlists)
           refreshInterval = setInterval(async () => {
             await player.refreshPlayer()
           }, 10000)
