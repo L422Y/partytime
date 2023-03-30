@@ -2,7 +2,7 @@
 import { useAppStore } from "@/stores/app"
 import { computed, onBeforeUnmount, ref } from "vue"
 
-const {playlistId} = useRoute().params
+const playlistId = <string>useRoute().params?.playlistId || ""
 const $router = useRouter()
 const appStore = useAppStore()
 const response = await useSpotifyGetPlaylist(playlistId)
@@ -15,7 +15,7 @@ const coverImage = computed(() => {
 })
 const playlistView = ref()
 
-const keyHandler = (e) => {
+const keyHandler = (e: KeyboardEvent) => {
   if (e.key === "Escape") {
     appStore.$state.showPlaylist = false
     $router.push("/")

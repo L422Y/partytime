@@ -4,7 +4,14 @@ export default defineEventHandler(async (event) => {
   if (spotifyClientId && spotifyClientSecret && spotifyCallbackUrl) {
     const tokenUrl = `https://accounts.spotify.com/api/token`
     const body = await readBody(event)
-    const requestBody = {
+    const requestBody: {
+      code: any;
+      grant_type: any;
+      redirect_uri: any;
+      client_secret: any;
+      client_id: any;
+      refresh_token?: any;
+    } = {
       grant_type: body?.grant_type || "authorization_code",
       code: body?.code,
       redirect_uri: spotifyCallbackUrl,

@@ -12,7 +12,7 @@ const selectPlaylist = () => {
 }
 
 const selectUser = () => {
-  app.emit("showUser", props.playlist)
+  if (app) app.emit("showUser", props.playlist)
 }
 </script>
 
