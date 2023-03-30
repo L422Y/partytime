@@ -182,7 +182,6 @@ const toggleBigMode = () => {
 
     .now-playing__track {
       font-size: 1.4em;
-      overflow-wrap: anywhere;
     }
 
     .now-playing__artists {
