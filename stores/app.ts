@@ -10,6 +10,7 @@ export const useAppStore = defineStore("appStore", () => {
   const spotifyUser: Ref<ISpotifyUser | undefined> = ref()
   const spotifyAccessToken = ref("")
   const spotifyRefreshToken = ref("")
+  const isAuthenticated = ref(false)
 
   const setSpotifyUser = (user: ISpotifyUser) => {
     localStorage?.setItem("spotify_user", JSON.stringify(user))
@@ -35,7 +36,7 @@ export const useAppStore = defineStore("appStore", () => {
     spotifyAccessToken.value = ""
     localStorage?.removeItem("spotify_access_token")
   }
-  const useAccessAuthorizationResponse = (response: {
+  const useAccessAuthorizationResponse = async (response: {
     access_token: string
     token_type: string
     expires_in: number
@@ -43,19 +44,20 @@ export const useAppStore = defineStore("appStore", () => {
     scope: string
   }) => {
     if (response) {
-      console.log("useAccessAuthorizationResponse", response)
+
       if (response.access_token) {
         localStorage?.setItem("spotify_access_token", response.access_token)
+        spotifyAccessToken.value = response.access_token
       }
+
       if (response.refresh_token) {
         localStorage?.setItem("spotify_refresh_token", response.refresh_token)
+        spotifyRefreshToken.value = response.refresh_token
       }
-      localStorage?.setItem(
-        "spotify_refresh_expires",
-        ( Date.now() + response.expires_in * 1000 ).toString()
-      )
 
-      spotifyAccessToken.value = response.access_token
+      localStorage?.setItem("spotify_refresh_expires", ( Date.now() + response.expires_in * 1000 ).toString())
+      useAppStore().$state.isAuthenticated = true
+
     }
   }
 
@@ -67,6 +69,7 @@ export const useAppStore = defineStore("appStore", () => {
     spotifyRefreshToken,
     currentPlaylist,
     playlists,
+    isAuthenticated,
     clearAuthCode,
     clearAccessToken,
     setCurrentPlaylist,

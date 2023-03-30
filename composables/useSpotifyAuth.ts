@@ -1,4 +1,5 @@
 import { useAppStore } from "@/stores/app"
+import { useSpotifyGetUser } from "~/composables/useSpotify"
 
 const useSpotifyAuthResponse = async (response: any) => {
   const appStore = useAppStore()
@@ -7,23 +8,26 @@ const useSpotifyAuthResponse = async (response: any) => {
       case "invalid_grant":
         // The provided authorization grant (e.g., authorization code, resource owner credentials) or refresh token is invalid, expired, revoked, does not match the redirection URI used in the authorization request, or was issued to another client.
         appStore.clearAuthCode()
+        useAppStore().$state.isAuthenticated = false
+
         break
       case "invalid_client":
         // Client authentication failed (e.g., unknown client, no client authentication included, or unsupported authentication method).
+        useAppStore().$state.isAuthenticated = false
         break
       case "invalid_request":
         // The request is missing a required parameter, includes an invalid parameter value, includes a parameter more than once, or is otherwise malformed.
         break
       case "unauthorized_client":
         // The authenticated client is not authorized to use this authorization grant type.
+        useAppStore().$state.isAuthenticated = false
         break
       default:
       // Handle any other errors
     }
   } else {
     // Handle the response from your server
-    console.log("HANDLE RESPONSE", {response})
-    appStore.useAccessAuthorizationResponse(response)
+    await appStore.useAccessAuthorizationResponse(response)
     await useSpotifyGetUser()
   }
 }
@@ -39,7 +43,6 @@ export const useSpotifyAuthGetAccessToken = async (authorizationCode: string) =>
         code: authorizationCode,
       }),
     })
-    console.log({response})
     await useSpotifyAuthResponse(response)
   } else {
     // Handle errors, e.g. show an error message or redirect to an error page
@@ -72,6 +75,7 @@ export const useSpotifyAuthRefresh = async () => {
     })
       .then(async (response) => {
         if (!response.ok) {
+          useAppStore().$state.isAuthenticated = false
           throw new Error(`HTTP error ${response.status}`)
         }
         await useSpotifyAuthResponse(await response.json())
@@ -85,7 +89,7 @@ export const useSpotifyAuthRefresh = async () => {
 
 export const useSpotifyAuthURL = () => {
   const {spotifyClientId, spotifyCallbackUrl} = useRuntimeConfig().public
-  const scopes = "user-read-private user-read-email"
+  const scopes = "user-read-private user-read-email user-read-currently-playing user-read-playback-state user-modify-playback-state"
   return `https://accounts.spotify.com/authorize?` +
     `client_id=${spotifyClientId}` +
     `&response_type=code` +
