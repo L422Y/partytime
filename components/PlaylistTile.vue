@@ -26,7 +26,6 @@ const selectUser = () => {
           alt=""
           width="320"
         />
-        <img v-else alt="" src="http://placekitten.com/320/320" width="320"/>
       </NuxtLink>
       <NuxtLink :to="`/playlists/${props.playlist.id}`" @click="selectPlaylist">
         {{ props.playlist.name }}
