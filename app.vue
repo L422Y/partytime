@@ -23,7 +23,7 @@ if (process.client) {
 
   const playlistsCheck = (value: any) => {
     {
-      if (value.items.length === 0) {
+      if (value?.items?.length === 0) {
         useRouter().push("/now-playing")
       }
     }
