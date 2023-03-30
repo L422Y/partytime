@@ -1,10 +1,12 @@
 <script lang="ts" setup>
 import { useAppStore } from "@/stores/app"
 import { computed, onBeforeUnmount, ref } from "vue"
+import { usePlayerStore } from "~/stores/player"
 
 const playlistId = <string>useRoute().params?.playlistId || ""
 const $router = useRouter()
 const appStore = useAppStore()
+const player = usePlayerStore()
 const response = await useSpotifyGetPlaylist(playlistId)
 const playlist = computed(() => response?.data?.value)
 const playlistLink = computed(() => playlist?.value?.external_urls?.spotify)
@@ -22,7 +24,9 @@ const keyHandler = (e: KeyboardEvent) => {
   }
 }
 if (process.client) {
-
+  onBeforeMount(() => {
+    player.$state.nowPlayingMinimized = true
+  })
   onMounted(() => {
     window.addEventListener("keydown", keyHandler)
   })
