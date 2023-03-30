@@ -32,8 +32,13 @@
     "typescript"
   ],
   "devDependencies": {
+    "@pinia/nuxt": "^0.4.7",
     "nuxt": "^3.3.1",
-    "sass": "^1.59.3",
-    "@pinia/nuxt": "^0.4.7"
+    "sass": "^1.59.3"
+  },
+  "dependencies": {
+    "@fortawesome/fontawesome-svg-core": "^6.4.0",
+    "@fortawesome/free-solid-svg-icons": "^6.4.0",
+    "@fortawesome/vue-fontawesome": "^3.0.3"
   }
 }
