@@ -1,138 +1,23 @@
 import { defineStore } from "pinia"
-import { ref } from "vue"
+import { Ref, ref } from "vue"
 import { useSpotifyAPI } from "#imports"
-
-export interface IPlayerState {
-  id: string;
-  is_active: boolean,
-  is_private_session: boolean,
-  is_restricted: boolean,
-  name: string,
-  type: string,
-  volume_percent: number
-}
-export interface IPlayerItem {
-  "album": {
-  "album_type": string,
-    "total_tracks": number,
-    "available_markets": string[],
-    "external_urls": {
-    "spotify": string
-  },
-  "href": string,
-    "id": string,
-    "images": [
-    {
-      "url": string,
-      "height": number,
-      "width": number
-    }]
-
-  "name": string,
-    "release_date": string,
-    "release_date_precision": string,
-    "restrictions": {
-    "reason": string
-  },
-  "type": string,
-    "uri": string,
-    "copyrights": [
-    {
-      "text": string,
-      "type": string
-    }
-  ],
-    "external_ids": {
-    "isrc": string,
-      "ean": string,
-      "upc": string
-  },
-  "genres": ["Egg punk", "Noise rock"],
-    "label": string,
-    "popularity": 0,
-    "album_group": "compilation",
-    "artists": [
-    {
-      "external_urls": {
-        "spotify": string
-      },
-      "href": string,
-      "id": string,
-      "name": string,
-      "type": "artist",
-      "uri": string
-    }
-  ]
-},
-  "artists": [
-  {
-    "external_urls": {
-      "spotify": string
-    },
-    "followers": {
-      "href": string,
-      "total": 0
-    },
-    "genres": ["Prog rock", "Grunge"],
-    "href": string,
-    "id": string,
-    "images": [
-      {
-        "url": "https://i.scdn.co/image/ab67616d00001e02ff9ca10b55ce82ae553c8228",
-        "height": 300,
-        "width": 300
-      }
-    ],
-    "name": string,
-    "popularity": 0,
-    "type": "artist",
-    "uri": string
-  }
-],
-  "available_markets": [string],
-  "disc_number": 0,
-  "duration_ms": 0,
-  "explicit": false,
-  "external_ids": {
-  "isrc": string,
-    "ean": string,
-    "upc": string
-},
-  "external_urls": {
-  "spotify": string
-},
-  "href": string,
-  "id": string,
-  "is_playable": false,
-  "linked_from": {},
-  "restrictions": {
-  "reason": string
-},
-  "name": string,
-  "popularity": 0,
-  "preview_url": string,
-  "track_number": 0,
-  "type": "track",
-  "uri": string,
-  "is_local": false
-}
+import { ISpotifyPlayerItem, ISpotifyPlayerState, ISpotifyQueue } from "~/types/spotify"
 
 export const usePlayerStore = defineStore("playerStore", () => {
-  const device: Ref<IPlayerState | undefined> = ref()
+  const currentQueue: Ref<ISpotifyQueue | undefined> = ref()
+  const device: Ref<ISpotifyPlayerState | undefined> = ref()
   const repeat_state: Ref<string | undefined> = ref()
   const shuffle_state: Ref<boolean | undefined> = ref()
   const context: Ref<{
-    "type": string,
-    "href": string,
-    "external_urls": {
-      "spotify": string
-    },
-    "uri": string
+    type: string,
+    href: string,
+    external_urls: { spotify: string },
+    uri: string
   } | undefined> = ref()
   const timestamp: Ref<number | undefined> = ref()
   const progress_ms: Ref<number | undefined> = ref()
   const is_playing: Ref<boolean | undefined> = ref()
-  const item: Ref<IPlayerItem | undefined> = ref()
+  const item: Ref<ISpotifyPlayerItem | undefined> = ref()
 
   const nowPlayingMinimized = ref(false)
 
@@ -163,6 +48,34 @@ export const usePlayerStore = defineStore("playerStore", () => {
       }).then(setPlayer)
   }
 
+  const fetchQueue = async (): Promise<ISpotifyQueue> => {
+    return await useSpotifyAPI("/me/player/queue")
+      .then((response) => {
+        const {error, pending, data} = response
+        if (error.value) console.error(error.value)
+        if (pending.value) console.log("pending")
+        if (data.value) return data.value
+        return data.value === "" ? {} : data.value
+      }).then((data: ISpotifyQueue) => {
+        setQueue(data)
+        return data
+      })
+  }
+
+  const setQueue = (data: ISpotifyQueue) => {
+    if (data === undefined) return
+    currentQueue.value = data
+  }
+
+  const refreshQueue = () => {
+    fetchQueue().then((data: ISpotifyQueue) => {
+      setQueue(data)
+    })
+  }
+
+  watch(item, (value) => {
+    refreshQueue()
+  })
 
   return {
     refreshPlayer,
@@ -174,6 +87,7 @@ export const usePlayerStore = defineStore("playerStore", () => {
     timestamp,
     progress_ms,
     is_playing,
-    item
+    item,
+    currentQueue
   }
 })
