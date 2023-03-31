@@ -85,7 +85,6 @@ const toggleBigMode = () => {
           <div>{{ playerState.item?.album?.name }}</div>
           <div>{{ playerState.item?.album?.release_date }}</div>
         </div>
-
       </div>
       <div class="now-playing__device">
         <span><font-awesome-icon :icon="deviceType"></font-awesome-icon> {{ playerState.device?.name }}</span>
@@ -215,6 +214,7 @@ const toggleBigMode = () => {
       max-width: calc(100vw - 5rem);
       filter: drop-shadow(0 0 100px #000);
       margin: 0 auto;
+      justify-content: center;
     }
 
 
@@ -245,6 +245,24 @@ const toggleBigMode = () => {
     }
 
     .now-playing__cover {
+      position: fixed;
+      z-index: -1;
+      top: -1rem;
+      right: -1rem;
+      bottom: -1rem;
+      left: -1rem;
+      width: auto;
+      height: auto;
+      background-color: #000a;
+      filter: blur(3px) contrast(.8) brightness(0.3);
+
+      img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
+    }
+    .now-playing__dazzler {
       position: fixed;
       z-index: -1;
       top: -1rem;
