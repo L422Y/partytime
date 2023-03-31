@@ -33,6 +33,7 @@ if (process.client) {
   playlistsCheck(appStore.playlists)
 
   let refreshInterval: any = null
+  // @ts-ignore
   useNuxtApp().hook("spotify:authenticated",
     async (isAuthenticated: boolean) => {
       if (isAuthenticated) {

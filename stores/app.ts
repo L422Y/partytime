@@ -14,6 +14,7 @@ export const useAppStore = defineStore("appStore", () => {
 
   watch(isAuthenticated,
     async (value) => {
+      // @ts-ignore
       await useNuxtApp().callHook("spotify:authenticated", value)
     })
 
