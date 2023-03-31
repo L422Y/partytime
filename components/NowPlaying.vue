@@ -3,6 +3,7 @@ import { getCurrentInstance } from "vue"
 import { ISpotifyPlaylist } from "@/types/spotify"
 import { usePlayerStore } from "~/stores/player"
 import { useRoute } from "#app"
+import CurrentQueue from "~/components/CurrentQueue.vue"
 
 const {mode: initialMode} = withDefaults(defineProps<{ playlist?: ISpotifyPlaylist, mode: string }>(),
   {
@@ -24,14 +25,38 @@ const artists = computed(() => {
   }
 })
 
-const toggleBigMode = () => {
+const track = computed(() => {
+  if (playerState.value.item?.name) {
+    setTimeout(checkTrackNameWidth, 0)
+    return playerState.value.item?.name
+  }
+})
+const trackName = ref()
 
+const checkTrackNameWidth = () => {
+  const trackNameEl = trackName.value as HTMLElement
+  if (trackNameEl) {
+    const trackNameWidth = trackNameEl?.offsetWidth
+    const trackNameParentWidth = trackNameEl?.parentElement?.offsetWidth
+    if (trackNameParentWidth && trackNameWidth > trackNameParentWidth) {
+      // trackNameEl.parentElement?.classList.add("marquee")
+      trackNameEl.style.zoom = `${trackNameParentWidth / trackNameWidth}`
+    } else {
+      trackNameEl.style.zoom = "1"
+
+      // trackNameEl.parentElement?.classList.remove("marquee")
+    }
+  }
+}
+
+const toggleBigMode = () => {
   if (useRoute().path !== "/now-playing") {
     useRouter().push("/now-playing")
   } else {
     useRouter().push("/")
   }
 }
+
 
 </script>
 <template>
@@ -46,7 +71,7 @@ const toggleBigMode = () => {
         </span>
         <div v-else-if="mode === 'big'">
           <div class="now-playing__track">
-            {{ playerState.item?.name }}
+            <span ref="trackName" v-html="track" />
           </div>
           <div class="now-playing__artists">
             {{ artists }}
@@ -58,7 +83,6 @@ const toggleBigMode = () => {
         </span>
         <div v-if="mode === 'big'" class="now-playing__album">
           <div>{{ playerState.item?.album?.name }}</div>
-          /
           <div>{{ playerState.item?.album?.release_date }}</div>
         </div>
 
@@ -72,6 +96,9 @@ const toggleBigMode = () => {
         <picture class="now-playing__cover">
           <img :src="playerState.item?.album?.images[0].url" alt="">
         </picture>
+      </template>
+      <template v-if="mode==='big'">
+        <CurrentQueue/>
       </template>
     </aside>
   </div>
@@ -89,6 +116,7 @@ const toggleBigMode = () => {
   width: auto;
   height: 8em;
   max-height: 8em;
+
   &.minimized {
     top: 100vh;
     overflow: hidden;
@@ -136,9 +164,8 @@ const toggleBigMode = () => {
     position: relative;
     z-index: 2;
     left: 50%;
-    max-width: 50%;
-
     display: grid;
+    max-width: 50%;
     padding: 1em;
     transform: translateX(-50%);
     background-color: #000a;
@@ -149,6 +176,7 @@ const toggleBigMode = () => {
     font-size: clamp(1rem, 5vw, 5rem);
     top: 0;
     right: 0;
+    bottom: 0;
     left: 0;
     overflow: hidden;
     align-items: center;
@@ -165,23 +193,37 @@ const toggleBigMode = () => {
     .now-playing__inside {
       position: relative;
       left: 0;
-      display: block;
-      width: fit-content;
-      max-width: calc(100vw - 4em);
-      padding: 2em;
+      display: grid;
+      box-sizing: border-box;
+      width: 100%;
+      max-width: 100vw;
+      height: 100%;
+      padding: 0em;
       transform: none;
       text-align: center;
       background-color: #000a;
-      gap: 1em;
+      gap: 3rem;
+    }
+
+    .now-playing__head {
+      margin-top: 2rem;
     }
 
     .now-playing__what {
       font-size: 1.7em;
+      line-height: .8;
+      max-width: calc(100vw - 5rem);
       filter: drop-shadow(0 0 100px #000);
+      margin: 0 auto;
     }
+
 
     .now-playing__track {
       font-size: 1.4em;
+      line-height: 0.8;
+      span {
+        transition: zoom 1s;
+      }
     }
 
     .now-playing__artists {
@@ -194,7 +236,7 @@ const toggleBigMode = () => {
     .now-playing__album {
       font-size: .4em;
       font-weight: 100;
-      flex-direction: row;
+      flex-direction: column;
       justify-content: center;
     }
 
@@ -212,7 +254,7 @@ const toggleBigMode = () => {
       width: auto;
       height: auto;
       background-color: #000a;
-      filter: blur(3px) contrast(.8) brightness(0.5);
+      filter: blur(3px) contrast(.8) brightness(0.3);
 
       img {
         width: 100%;
@@ -221,5 +263,14 @@ const toggleBigMode = () => {
       }
     }
   }
+}
+.marquee {
+  display: inline-block;
+  white-space: nowrap;
+  animation: marquee 5s linear alternate infinite;
+}
+@keyframes marquee {
+  0%   { transform: translate(0, 0); }
+  100% { transform: translate(calc(-100% + 100vw), 0); }
 }
 </style>
