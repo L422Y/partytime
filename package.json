@@ -34,11 +34,16 @@
   "devDependencies": {
     "@pinia/nuxt": "^0.4.7",
     "nuxt": "^3.3.1",
-    "sass": "^1.59.3"
+    "sass": "^1.59.3",
+    "socket.io": "^4.6.1",
+    "socket.io-client": "^4.6.1",
+    "twilio": "^4.9.0"
   },
   "dependencies": {
     "@fortawesome/fontawesome-svg-core": "^6.4.0",
     "@fortawesome/free-solid-svg-icons": "^6.4.0",
-    "@fortawesome/vue-fontawesome": "^3.0.3"
+    "@fortawesome/vue-fontawesome": "^3.0.3",
+    "@nuxt-alt/proxy": "^2.2.3",
+    "@types/socket.io-client": "^3.0.0"
   }
 }
