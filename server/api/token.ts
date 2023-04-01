@@ -1,6 +1,7 @@
 export default defineEventHandler(async (event) => {
   const {spotifyClientId, spotifyCallbackUrl} = useRuntimeConfig().public
   const spotifyClientSecret = process.env.NUXT_SPOTIFY_CLIENT_SECRET
+
   if (spotifyClientId && spotifyClientSecret && spotifyCallbackUrl) {
     const tokenUrl = `https://accounts.spotify.com/api/token`
     const body = await readBody(event)
@@ -24,17 +25,15 @@ export default defineEventHandler(async (event) => {
     }
 
     const searchBody = new URLSearchParams(requestBody).toString()
-    const response = await fetch(tokenUrl, {
+    return await fetch(tokenUrl, {
       method: "POST",
-      headers: {
-        "Content-Type": "application/x-www-form-urlencoded",
-      },
+      headers: {"Content-Type": "application/x-www-form-urlencoded",},
       body: searchBody
+    }).then((response) => {
+      return response.json()
+    }).catch((error) => {
+      return {error: error}
     })
-      .catch((error) => {
-        return {error: error}
-      })
-    return await response.json()
   } else {
     return {
       error: "Missing spotify client id or secret",

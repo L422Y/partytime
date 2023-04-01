@@ -36,6 +36,22 @@ export const usePlayerStore = defineStore("playerStore", () => {
   const refreshPlayer = () => {
     fetchPlayer().then((data) => setPlayer(data))
   }
+  //
+  // const adjustQueue = async (adjustment: any) => {
+  //   console.log("adjustQueue", currentQueue.value)
+  //   const params = {
+  //     uri: currentQueue.value?.queue[0].uri,
+  //     position: "3"
+  //   }
+  //
+  //   const {error, pending, data} = await useSpotifyAPI("/me/player/queue", params)
+  //
+  //   if (error.value) console.error(error.value)
+  //   if (pending.value) console.log("pending")
+  //   setQueue(data.value)
+  //   console.log("adjustQueue", params, data.value)
+  // }
+
 
   const fetchPlayer = async () => {
     return await useSpotifyAPI("/me/player")
@@ -67,14 +83,14 @@ export const usePlayerStore = defineStore("playerStore", () => {
     currentQueue.value = data
   }
 
-  const refreshQueue = () => {
-    fetchQueue().then((data: ISpotifyQueue) => {
+  const refreshQueue = async () => {
+    await fetchQueue().then((data: ISpotifyQueue) => {
       setQueue(data)
     })
   }
 
-  watch(item, (value) => {
-    refreshQueue()
+  watch(item, async (value) => {
+    await refreshQueue()
   })
 
   return {

@@ -1,5 +1,6 @@
 import { useAppStore } from "@/stores/app"
 import { useSpotifyGetUser } from "~/composables/useSpotify"
+import { Ref } from "vue"
 
 const useSpotifyAuthResponse = async (response: any) => {
   const appStore = useAppStore()
@@ -49,7 +50,7 @@ export const useSpotifyAuthGetAccessToken = async (authorizationCode: string) =>
   }
 }
 
-const authRefreshed = ref(false)
+const authRefreshed: Ref<boolean> = ref(false)
 export const useSpotifyAuthRefresh = async () => {
   if (authRefreshed.value) {
     console.warn("Already refreshing auth")

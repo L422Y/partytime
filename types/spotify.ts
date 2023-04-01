@@ -1,5 +1,3 @@
-import { ISpotifyAlbum } from "~/stores/player"
-
 export interface ISpotifyUser {
   country: string
   display_name: string

@@ -1,7 +1,8 @@
 import { useAppStore } from "@/stores/app"
 import { useSpotifyAuthRefresh } from "@/composables/useSpotifyAuth"
+import { useFetch } from "#imports"
 
-export const useSpotifyAPI = async (path: any, params: { [key: string]: string } = {}, retry: boolean = true) => {
+export const useSpotifyAPI = async (path: any, params: { [key: string]: any } = {}, retry: boolean = true) => {
   const appStore = useAppStore()
   const url = new URL(`https://api.spotify.com/v1${path}`)
   Object.entries(params).forEach(([key, value]) => url.searchParams.append(key, value))
@@ -11,9 +12,6 @@ export const useSpotifyAPI = async (path: any, params: { [key: string]: string }
   }
   return useFetch(url.toString(), {
     method: "GET",
-    // headers: {
-    //   "Authorization": "Basic " + btoa(client_id + ":" + client_secret)
-    // },
     headers: {Authorization: `Bearer ${appStore.$state.spotifyAccessToken}`},
   }).then(async (response) => {
     const {error} = response

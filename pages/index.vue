@@ -13,7 +13,7 @@ onMounted(() => {
 <template>
   <ClientOnly>
     <PlaylistsView
-      v-if="appStore.spotifyUser && appStore.spotifyAccessToken"
+      v-if="appStore?.spotifyUser && appStore?.spotifyAccessToken"
       ref="pv"
     />
     <div v-else>
