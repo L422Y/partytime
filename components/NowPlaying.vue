@@ -3,7 +3,8 @@ import { getCurrentInstance } from "vue"
 import { ISpotifyPlaylist } from "@/types/spotify"
 import { usePlayerStore } from "~/stores/player"
 import { useRoute } from "#app"
-import CurrentQueue from "~/components/CurrentQueue.vue"
+import CurrentQueue from "~/components/Queue/CurrentQueue.vue"
+import { useVotesStore } from "../stores/votes"
 
 const {mode: initialMode} = withDefaults(defineProps<{ playlist?: ISpotifyPlaylist, mode: string }>(),
   {
@@ -13,15 +14,39 @@ const {mode: initialMode} = withDefaults(defineProps<{ playlist?: ISpotifyPlayli
 const mode = ref(initialMode)
 const app = getCurrentInstance()
 const player = usePlayerStore()
+const voteStore = useVotesStore()
+const transitionTime = ref(0)
+let trackTimeout: any
 
 const playerState = computed(() => player.$state)
+let lastPercentDone = 0
+const percentDone = computed(() => {
+  let pdone = 0
+  if (playerState.value?.progress_ms && playerState.value.item?.duration_ms) {
+    pdone = playerState?.value?.progress_ms / playerState.value.item?.duration_ms * 100
+    if (!trackTimeout) {
+      trackTimeout = setTimeout(() => {
+        player.refreshPlayer()
+        trackTimeout = null
+      }, playerState.value.item?.duration_ms - playerState.value.progress_ms)
+    }
+  }
+  if (pdone < lastPercentDone) {
+    transitionTime.value = 0
+  } else {
+    transitionTime.value = 10
+  }
+  lastPercentDone = pdone
+
+  return pdone
+})
+
 const minimized = computed(() => player.$state?.nowPlayingMinimized)
+const votes = computed(() => voteStore.$state?.votes)
 const deviceType = computed(() => player.$state?.device?.type == "Computer" ? "desktop" : "mobile-phone")
 const artists = computed(() => {
   if (playerState.value.item?.artists) {
-    return playerState.value.item?.artists
-      .map((artist) => artist.name)
-      .join(", ")
+    return playerState.value.item?.artists.map((artist) => artist.name).join(", ")
   }
 })
 
@@ -33,18 +58,28 @@ const track = computed(() => {
 })
 const trackName = ref()
 
+
 const checkTrackNameWidth = () => {
   const trackNameEl = trackName.value as HTMLElement
   if (trackNameEl) {
     const trackNameWidth = trackNameEl?.offsetWidth
+    const trackNameHeight = trackNameEl?.offsetHeight
     const trackNameParentWidth = trackNameEl?.parentElement?.offsetWidth
-    if (trackNameParentWidth && trackNameWidth > trackNameParentWidth) {
-      // trackNameEl.parentElement?.classList.add("marquee")
-      trackNameEl.style.zoom = `${trackNameParentWidth / trackNameWidth}`
-    } else {
-      trackNameEl.style.zoom = "1"
+    const windowHeight = window.innerHeight
 
-      // trackNameEl.parentElement?.classList.remove("marquee")
+    if (trackNameEl.style.zoom === "1" || !trackNameEl.style.zoom) {
+      if (( trackNameParentWidth && trackNameWidth > trackNameParentWidth ) || ( trackNameHeight && trackNameHeight > ( windowHeight * .42 ) )) {
+        // @ts-ignore
+        trackNameEl.style.zoom = `${Math.min(trackNameParentWidth / trackNameWidth, windowHeight * .42 / trackNameHeight)}`
+      }
+        // else if (trackNameHeight > ( windowHeight * .42 )) {
+        //   // @ts-ignore
+        //   trackNameEl.style.zoom = `${windowHeight * .42 / trackNameHeight}`
+      // }
+      else {
+        // @ts-ignore
+        trackNameEl.style.zoom = "1"
+      }
     }
   }
 }
@@ -57,12 +92,13 @@ const toggleBigMode = () => {
   }
 }
 
-
 </script>
 <template>
-  <div v-if="playerState.device" :class="[minimized && !(mode === 'big') ? 'minimized' : '', mode ]"
-       class="now-playing"
-       @click="toggleBigMode">
+  <div
+    v-if="playerState.device"
+    :class="[minimized && !(mode === 'big') ? 'minimized' : '', mode ]"
+    class="now-playing"
+    @click="toggleBigMode">
     <aside class="now-playing__inside">
       <header class="now-playing__head">Now Playing</header>
       <div class="now-playing__what">
@@ -71,19 +107,22 @@ const toggleBigMode = () => {
         </span>
         <div v-else-if="mode === 'big'">
           <div class="now-playing__track">
-            <span ref="trackName" v-html="track" />
+            <span ref="trackName" v-html="track"/>
           </div>
           <div class="now-playing__artists">
             {{ artists }}
           </div>
         </div>
         <span v-if="mode === 'normal'" class="now-playing__album">
-          {{ playerState.item?.album?.name }} -
-          {{ playerState.item?.album?.release_date }}
+          {{ playerState.item?.album?.name }} - {{ playerState.item?.album?.release_date }}
         </span>
         <div v-if="mode === 'big'" class="now-playing__album">
           <div>{{ playerState.item?.album?.name }}</div>
           <div>{{ playerState.item?.album?.release_date }}</div>
+        </div>
+        <div class="now-playing__progress">
+          <div :style="{width: `${percentDone}%`, transition:`width ${transitionTime}s linear`}"
+               class="now-playing__progress-bar"/>
         </div>
       </div>
       <div class="now-playing__device">
@@ -209,18 +248,19 @@ const toggleBigMode = () => {
     }
 
     .now-playing__what {
-      font-size: 1.7em;
+      font-size: 1.3em;
       line-height: .8;
-      max-width: calc(100vw - 5rem);
-      filter: drop-shadow(0 0 100px #000);
-      margin: 0 auto;
       justify-content: center;
+      width: 100%;
+      max-width: calc(100vw - 5rem);
+      margin: 0 auto;
+      filter: drop-shadow(0 0 100px #000);
     }
 
-
     .now-playing__track {
-      font-size: 1.4em;
+      font-size: 2.0em;
       line-height: 0.8;
+
       span {
         transition: zoom 1s;
       }
@@ -244,6 +284,34 @@ const toggleBigMode = () => {
       display: none;
     }
 
+    .now-playing__progress {
+      position: relative;
+      z-index: 2;
+      display: flex;
+      overflow: hidden;
+      align-items: center;
+      justify-content: flex-start;
+      width: 100%;
+      height: 0.2rem;
+      padding: 0em;
+      border-radius: 0.25rem;
+      background-color: #000a;
+      gap: 1em;
+    }
+
+    .now-playing__progress-bar {
+      position: relative;
+      z-index: 2;
+      display: flex;
+      justify-content: center;
+      width: 100%;
+      height: 100%;
+      padding: 0em;
+      transition: width 10s linear;
+      background-color: #ffffff;
+      gap: 1em;
+    }
+
     .now-playing__cover {
       position: fixed;
       z-index: -1;
@@ -262,6 +330,7 @@ const toggleBigMode = () => {
         object-fit: cover;
       }
     }
+
     .now-playing__dazzler {
       position: fixed;
       z-index: -1;
@@ -282,13 +351,21 @@ const toggleBigMode = () => {
     }
   }
 }
+
+
 .marquee {
   display: inline-block;
-  white-space: nowrap;
   animation: marquee 5s linear alternate infinite;
+  white-space: nowrap;
 }
+
+
 @keyframes marquee {
-  0%   { transform: translate(0, 0); }
-  100% { transform: translate(calc(-100% + 100vw), 0); }
+  0% {
+    transform: translate(0, 0);
+  }
+  100% {
+    transform: translate(calc(-100% + 100vw), 0);
+  }
 }
 </style>
