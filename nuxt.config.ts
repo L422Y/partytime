@@ -10,6 +10,7 @@ export default defineNuxtConfig({
   },
   runtimeConfig: {
     public: {
+      voting: false,
       spotifyRedirectUrl: "http://localhost:5173/",
       spotifyCallbackUrl: "http://localhost:5173/spotify-callback",
       spotifyClientId: "e25c017bdd6b476aaece984d99a0fd5c",

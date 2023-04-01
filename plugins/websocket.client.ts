@@ -47,6 +47,19 @@ export default defineNuxtPlugin((nuxtApp) => {
           appStore.$state.smsNumber = data
         }
       })
+      if(useRuntimeConfig().public.voting) {
+        socket.on("newVote", ({data}) => {
+          console.log("vote received: %s", data)
+          socket.emit("vote", {data})
+        })
+
+        socket.on("votesUpdated", ({data}) => {
+          console.log("votesUpdated", data)
+          if (data?.votes) {
+            votesStore.setVotes(data.votes)
+          }
+        })
+      }
     }
   })
 })
