@@ -17,15 +17,16 @@ export const useVotesStore = defineStore("votesStore", () => {
     votesById.value = mappedVotes
   }
 
-  setVotes({
-    "1": 1,
-    "2": 1,
-    "3": 1,
-    "4": 6,
-    "5": 6,
-    "6": 6,
-    "7": 6,
-  })
+  // For testing:
+  // setVotes({
+  //   "1": 1,
+  //   "2": 1,
+  //   "3": 1,
+  //   "4": 6,
+  //   "5": 6,
+  //   "6": 6,
+  //   "7": 6,
+  // })
 
   return {
     votes,
