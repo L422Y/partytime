@@ -1,6 +1,9 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
-  modules: ["@pinia/nuxt"],
+  modules: [
+    "@pinia/nuxt",
+    "@nuxt-alt/proxy"
+  ],
   css: [
     "@/src/assets/scss/base.scss",
     "@fortawesome/fontawesome-svg-core/styles.css"
@@ -15,5 +18,13 @@ export default defineNuxtConfig({
       spotifyCallbackUrl: "http://localhost:5173/spotify-callback",
       spotifyClientId: "e25c017bdd6b476aaece984d99a0fd5c",
     },
+  },
+  proxy: {
+    proxies: {
+      "^/ws/.*": {
+        target: 'ws://localhost:5174',
+        ws: true
+      },
+    }
   }
 })
