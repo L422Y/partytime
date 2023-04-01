@@ -41,6 +41,7 @@ export default defineNuxtPlugin(() => {
     socketServer.on("connect", (socket) => {
       socket.emit("message", `welcome ${socket.id}`)
       socket.emit("votesUpdated", {data: storedVotes})
+      socket.emit("smsNumber", {data: number})
       socket.broadcast.emit("message", `${socket.id} joined`)
     })
 

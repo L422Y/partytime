@@ -4,6 +4,7 @@ import { ISpotifyPlaylist, ISpotifyUser } from "~/types/spotify"
 
 export const useAppStore = defineStore("appStore", () => {
   const showPlaylist = ref(false)
+  const smsNumber = ref()
   const currentPlaylist = ref({})
   const playlists = ref({})
   const spotifyAuthCode = ref("")
@@ -77,6 +78,7 @@ export const useAppStore = defineStore("appStore", () => {
     currentPlaylist,
     playlists,
     isAuthenticated,
+    smsNumber,
     clearAuthCode,
     clearAccessToken,
     setCurrentPlaylist,

@@ -41,15 +41,10 @@ export default defineNuxtPlugin((nuxtApp) => {
         console.log("message received: %s", data)
         socket.emit("message", {data})
       })
-      socket.on("newVote", ({data}) => {
-        console.log("vote received: %s", data)
-        socket.emit("vote", {data})
-      })
-
-      socket.on("votesUpdated", ({data}) => {
-        console.log("votesUpdated", data)
-        if (data?.votes) {
-          votesStore.setVotes(data.votes)
+      socket.on("smsNumber", ({data}) => {
+        console.log("smsNumber", data)
+        if (data) {
+          appStore.$state.smsNumber = data
         }
       })
     }
