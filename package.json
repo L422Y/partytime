@@ -1,5 +1,5 @@
 {
-  "name": "shpotify",
+  "name": "partytime",
   "private": true,
   "version": "1.0.0",
   "license": "MIT",
@@ -24,15 +24,18 @@
       "email": "l422y@l422y.com"
     }
   ],
-  "description": "Nuxt 3 + Pinia + TypeScript + Spotify API",
+  "description": "Nuxt 3 Now Playing display for social music experience and voting. Currently supports Spotify.",
   "keywords": [
     "nuxt",
     "nuxt3",
     "pinia",
-    "typescript"
+    "typescript",
+    "twilio",
+    "spotify"
   ],
   "devDependencies": {
     "@pinia/nuxt": "^0.4.7",
+    "@types/dom-to-image": "^2.6.4",
     "nuxt": "^3.3.1",
     "sass": "^1.59.3",
     "socket.io": "^4.6.1",
@@ -44,6 +47,7 @@
     "@fortawesome/free-solid-svg-icons": "^6.4.0",
     "@fortawesome/vue-fontawesome": "^3.0.3",
     "@nuxt-alt/proxy": "^2.2.3",
-    "@types/socket.io-client": "^3.0.0"
+    "@types/socket.io-client": "^3.0.0",
+    "dom-to-image": "^2.6.0"
   }
 }

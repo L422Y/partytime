@@ -6,7 +6,9 @@ specifiers:
   '@fortawesome/vue-fontawesome': ^3.0.3
   '@nuxt-alt/proxy': ^2.2.3
   '@pinia/nuxt': ^0.4.7
+  '@types/dom-to-image': ^2.6.4
   '@types/socket.io-client': ^3.0.0
+  dom-to-image: ^2.6.0
   nuxt: ^3.3.1
   sass: ^1.59.3
   socket.io: ^4.6.1
@@ -19,9 +21,11 @@ dependencies:
   '@fortawesome/vue-fontawesome': 3.0.3_ns3tanzake47edvtuk73yvnw7a
   '@nuxt-alt/proxy': 2.2.3
   '@types/socket.io-client': 3.0.0
+  dom-to-image: 2.6.0
 
 devDependencies:
   '@pinia/nuxt': 0.4.7
+  '@types/dom-to-image': 2.6.4
   nuxt: 3.3.1_sass@1.60.0
   sass: 1.60.0
   socket.io: 4.6.1
@@ -1288,6 +1292,10 @@ packages:
       '@types/node': 18.15.11
     dev: true
 
+  /@types/dom-to-image/2.6.4:
+    resolution: {integrity: sha512-UddUdGF1qulrSDulkz3K2Ypq527MR6ixlgAzqLbxSiQ0icx0XDlIV+h4+edmjq/1dqn0KgN0xGSe1kI9t+vGuw==}
+    dev: true
+
   /@types/estree/1.0.0:
     resolution: {integrity: sha512-WulqXMDUTYAXCjZnk6JtIHPigp55cVtDgDrO2gHRwhyJto21+1zbVCtOYB2L1F9w4qCQ0rOGWBnBe0FNTiEJIQ==}
 
@@ -2220,6 +2228,10 @@ packages:
       domhandler: 4.3.1
       entities: 2.2.0
     dev: true
+
+  /dom-to-image/2.6.0:
+    resolution: {integrity: sha512-Dt0QdaHmLpjURjU7Tnu3AgYSF2LuOmksSGsUcE6ItvJoCWTBEmiMXcqBdNSAm9+QbbwD7JMoVsuuKX6ZVQv1qA==}
+    dev: false
 
   /domelementtype/2.3.0:
     resolution: {integrity: sha512-OLETBj6w0OsagBwdXnPdN0cnMfF9opN69co+7ZrbfPGrdpPVNBUj02spi6B1N7wChLQiPn4CSH/zJvXw56gmHw==}
