@@ -50,9 +50,18 @@ const artists = computed(() => {
   }
 })
 
+const nowPlaying: Ref<HTMLElement | undefined> = ref()
+const dataUrl = ref()
+const cloneImage = ref()
+let currentTrack = ""
+
+
 const track = computed(() => {
-  if (playerState.value.item?.name) {
+  if (currentTrack === "" || playerState.value.item?.name && playerState.value.item?.name !== currentTrack) {
     setTimeout(checkTrackNameWidth, 0)
+  }
+  if (playerState.value.item?.name) {
+    currentTrack = playerState.value.item?.name
     return playerState.value.item?.name
   }
 })
@@ -83,7 +92,32 @@ const checkTrackNameWidth = () => {
     }
   }
 }
-
+//
+// if (mode.value === "big") {
+//
+//   watch(() => track, async () => {
+//
+//     console.log("playerState changed")
+//     // if (node) {
+//     //   const clonedNode = node.cloneNode(true)
+//     //   document.body.appendChild(clonedNode)
+//     //   clonedNode.
+//     //   clonedNode.border = "1px solid black"
+//     // }
+//     if (nowPlaying.value) await domtoimage.toJpeg(
+//       nowPlaying.value, {quality: 0.95}).then(function (uri) {
+//       dataUrl.value = uri
+//       cloneImage.value.style.transition = "opacity 0s ease-in-out"
+//       setTimeout(() => {
+//         cloneImage.value.style.opacity = "1"
+//         cloneImage.value.style.transition = "opacity 2s ease-in-out"
+//         setTimeout(() => {
+//           cloneImage.value.style.opacity = "0"
+//         })
+//       })
+//     })
+//   })
+// }
 const toggleBigMode = () => {
   if (useRoute().path !== "/now-playing") {
     useRouter().push("/now-playing")
@@ -96,9 +130,12 @@ const toggleBigMode = () => {
 <template>
   <div
     v-if="playerState.device"
+    ref="nowPlaying"
     :class="[minimized && !(mode === 'big') ? 'minimized' : '', mode ]"
     class="now-playing"
     @click="toggleBigMode">
+<!--    <img v-if="mode === 'big' && dataUrl" ref="cloneImage" :src="dataUrl" alt="" class="cloneImage">-->
+
     <aside class="now-playing__inside">
       <header class="now-playing__head">Now Playing</header>
       <div class="now-playing__what">
@@ -350,6 +387,18 @@ const toggleBigMode = () => {
       }
     }
   }
+}
+
+
+.cloneImage {
+  position: fixed;
+  z-index: 999;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  width: auto;
+  height: auto;
 }
 
 
