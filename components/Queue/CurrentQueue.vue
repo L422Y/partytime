@@ -3,7 +3,14 @@
     <header class="queue__head">
       <span class="queue__upnext"><span>
         UP NEXT
-      </span> <Meter :value="meterConfig.value * 100" class="queue__meter" meterStyle="round"/></span>
+      </span>
+        <Meter
+          ref="meter"
+          :meterTransitionTime="meterTransitionTime"
+          :value="meterConfig.value * 100"
+          class="queue__meter"
+          meterStyle="round"
+        /></span>
       <VotingInfo v-if="voting" class="queue__voting"/>
     </header>
     <div class="queue__items">
@@ -75,20 +82,27 @@ watch(indexedTracks, (tracks) => {
         artists: track.artists,
         name: track.name,
         uri: track.uri,
+        id: track.id
       },
     }
   })
 })
 
 const votesSnapshot = ref(votesStore.$state.votesById)
-let iteration = 0
-setInterval(() => {
-  if (iteration++ % 100 === 0) {
-    meterConfig.value.value = 0
-    votesSnapshot.value = votesStore.$state.votesById
-  }
-  meterConfig.value.value = ( iteration % 100 ) / 100
-}, 250)
+const meter: Ref<typeof Meter | undefined> = ref()
+const meterTransitionTime = ref(0)
+const resetMeter = () => {
+  meterTransitionTime.value = 0
+  setTimeout(() => {
+    meterConfig.value = {color: "#ffffff", value: 0}
+    setTimeout(() => {
+      meterTransitionTime.value = 10
+      setTimeout(() => {
+        meterConfig.value = {color: "#ffffff", value: 1}
+      }, 100)
+    }, 10)
+  }, 0)
+}
 
 
 const updateCurrentQueueTracks = () => {
@@ -96,8 +110,39 @@ const updateCurrentQueueTracks = () => {
     const aVotes = votesSnapshot.value[a.track.id]?.length || 0
     const bVotes = votesSnapshot.value[b.track.id]?.length || 0
     return bVotes - aVotes
-  }) || []
+  }) || [] ).map(({track, originalIndex, id}: any, index: number) => {
+    return {track, originalIndex, id, index}
+  })
+}
+
+
+let snapInterval: any
+let resetInterval: any
+updateCurrentQueueTracks()
+const refresh = () => {
+  votesSnapshot.value = votesStore.$state.votesById
+  updateCurrentQueueTracks()
+
+}
+
+snapInterval = setInterval(() => {
+  refresh()
+}, 10000)
+resetInterval = setInterval(() => {
+  resetMeter()
+}, 10000)
+refresh()
+resetMeter()
+setTimeout(() => {
+  refresh()
+  resetMeter()
+}, 500)
+
+onBeforeUnmount(() => {
+  clearInterval(snapInterval)
+  clearInterval(resetInterval)
 })
+
 </script>
 <style lang="scss">
 .queue {
@@ -120,7 +165,7 @@ const updateCurrentQueueTracks = () => {
     line-height: 1;
     display: flex;
     justify-content: space-between;
-    margin: 0 1.5em 1rem 1.5em;
+    margin: 0 1rem 1rem 1rem;
     text-transform: uppercase;
     @media (max-width: 768px) {
       font-size: 1.4rem;
@@ -142,7 +187,7 @@ const updateCurrentQueueTracks = () => {
   &__items {
     display: grid;
     grid-template-rows: 1fr;
-    grid-template-columns: 1fr 1fr 1fr 1fr;
+    grid-template-columns: minmax(0,1fr) minmax(0,1fr) minmax(0,1fr) minmax(0,1fr);
     @media (max-width: 1024px) {
       grid-template-columns: 1fr 1fr;
     }
@@ -153,16 +198,18 @@ const updateCurrentQueueTracks = () => {
   }
 
   &__meter {
-
     width: 2rem;
     height: 2rem;
+
     circle {
       fill: none;
       stroke-linecap: round;
+
       &#track {
         stroke: #ffffff22 !important;
       }
     }
+
     @media (max-width: 768px) {
       width: 1.5rem;
       height: 1.5rem;

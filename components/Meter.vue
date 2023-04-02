@@ -32,8 +32,9 @@
         <circle
           id="bar"
           :style="{
-            strokeDashoffset: 280 - meterConfig.value * 280,
+            strokeDashoffset: 280 - (value/100) * 280,
             stroke: meterConfig.color,
+            transition: `all ${props.meterTransitionTime}s linear`
           }"
           cx="50"
           cy="50"
@@ -53,10 +54,12 @@ let props = withDefaults(
     label?: string;
     tick?: any;
     meterStyle?: "horizontal" | "vertical" | "round";
+    meterTransitionTime?: number;
   }>(),
   {
     value: 0,
     meterStyle: "horizontal",
+    meterTransitionTime: 0.5,
   }
 )
 
