@@ -12,9 +12,8 @@
 import { computed } from "vue"
 import { useAppStore } from "~/stores/app"
 import { usePhoneNumberFormatter } from "~/composables/usePhoneNumberFormatter"
-
 const appStore = useAppStore()
-const number = computed(() => {
+const number = useRuntimeConfig().public.fakeNumber || computed(() => {
   if (!appStore.$state.smsNumber) return null
   return usePhoneNumberFormatter(appStore.$state.smsNumber)
 })
