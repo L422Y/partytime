@@ -13,18 +13,12 @@ export default defineNuxtConfig({
   },
   runtimeConfig: {
     public: {
-      voting: false,
+      fakeNumber: "+12125551212",
+      voting: true,
+      websocketServerEndpoint: "http://localhost:5174",
       spotifyRedirectUrl: "http://localhost:5173/",
       spotifyCallbackUrl: "http://localhost:5173/spotify-callback",
       spotifyClientId: "e25c017bdd6b476aaece984d99a0fd5c",
     },
-  },
-  proxy: {
-    proxies: {
-      "^/ws/.*": {
-        target: 'ws://localhost:5174',
-        ws: true
-      },
-    }
   }
 })
