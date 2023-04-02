@@ -7,13 +7,11 @@ export const useVotesStore = defineStore("votesStore", () => {
   const setVotes = (updatedVotes: { [key: string]: number }) => {
     if (!updatedVotes || updatedVotes === votes.value) return
     votes.value = updatedVotes
-    console.log("updatedVotes", updatedVotes)
     let mappedVotes: { [key: number]: string[] } = {}
     for (const [key, value] of Object.entries(updatedVotes)) {
       mappedVotes[value] ??= []
       mappedVotes[value].push(key)
     }
-    console.log("mappedVotes", mappedVotes)
     votesById.value = mappedVotes
   }
 
