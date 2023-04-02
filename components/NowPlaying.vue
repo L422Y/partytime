@@ -359,7 +359,8 @@ const toggleBigMode = () => {
       width: auto;
       height: auto;
       background-color: #000a;
-      filter: blur(3px) contrast(.8) brightness(0.3);
+      filter: contrast(.8) brightness(0.3);
+      transform: rotate3d(1,1,1,0deg);
 
       img {
         width: 100%;

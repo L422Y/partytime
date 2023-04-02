@@ -7,7 +7,7 @@
       <VotingInfo v-if="voting" class="queue__voting"/>
     </header>
     <div class="queue__items">
-      <QueuedTrack v-for="queuedTrack in sortedTracks" :queued-track="queuedTrack"/>
+      <QueuedTrack v-for="queuedTrack in placeholders" :queued-track="queuedTrack"/>
     </div>
   </div>
 </template>
@@ -19,12 +19,30 @@ import { useVotesStore } from "~/stores/votes"
 import VotingInfo from "~/components/Voting/VotingInfo.vue"
 import Meter from "~/components/Meter.vue"
 
+
+const currentQueueTracks = useState("currentQueueTracks", () => [])
+const currentQueueElements = useState("currentQueueElements", () => [])
+
+
+let currentId = 0
+
+const placeholders = new Array(12).fill(0).map((_, index) => {
+  return {
+    id: currentId++,
+    originalIndex: index,
+    track: {
+      artists: [],
+      name: "",
+      uri: "",
+    },
+  }
+})
+
 const tracks = computed(() => usePlayerStore().$state.currentQueue?.queue?.slice(0, 12) || [])
 const votesStore = useVotesStore()
 
 const runtimeConfig = useRuntimeConfig()
 const voting = computed(() => runtimeConfig.public.voting)
-let currentId = 0
 
 const meterConfig = ref({color: "#ffffff", value: 0})
 const indexedTracks = ref()
@@ -72,10 +90,11 @@ setInterval(() => {
   meterConfig.value.value = ( iteration % 100 ) / 100
 }, 250)
 
-const sortedTracks = computed(() => {
-  return secondIndexed.value?.sort((a, b) => {
-    const aVotes = votesSnapshot.value[a.originalIndex]?.length || 0
-    const bVotes = votesSnapshot.value[b.originalIndex]?.length || 0
+
+const updateCurrentQueueTracks = () => {
+  currentQueueTracks.value = ( secondIndexed.value?.sort((a, b) => {
+    const aVotes = votesSnapshot.value[a.track.id]?.length || 0
+    const bVotes = votesSnapshot.value[b.track.id]?.length || 0
     return bVotes - aVotes
   }) || []
 })

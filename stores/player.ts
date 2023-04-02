@@ -80,6 +80,38 @@ export const usePlayerStore = defineStore("playerStore", () => {
 
   const setQueue = (data: ISpotifyQueue) => {
     if (data === undefined) return
+    data.queue = data.queue.map(({
+                                   album,
+                                   artists,
+                                   duration_ms,
+                                   explicit,
+                                   external_ids,
+                                   external_urls,
+                                   href,
+                                   id,
+                                   name,
+                                   popularity,
+                                   preview_url,
+                                   uri
+                                 }) => ( {
+                                  album: {
+                                    id: album.id,
+                                    uri: album.uri,
+                                    name: album.name,
+                                    images: album.images,
+                                  },
+                                  artists,
+                                  duration_ms,
+                                  explicit,
+                                  external_ids,
+                                  external_urls,
+                                  href,
+                                  id,
+                                  name,
+                                  popularity,
+                                  preview_url,
+                                  uri
+    } ))
     currentQueue.value = data
   }
 

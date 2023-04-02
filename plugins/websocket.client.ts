@@ -6,7 +6,6 @@ import { io, Socket } from "socket.io-client"
 import { computed } from "vue"
 import { useVotesStore } from "~/stores/votes"
 import { usePlayerStore } from "~/stores/player"
-import * as process from "process"
 
 export default defineNuxtPlugin((nuxtApp) => {
   const appStore = useAppStore()
@@ -23,13 +22,19 @@ export default defineNuxtPlugin((nuxtApp) => {
     }
   })
 
+  watch(playerStore, (player) => {
+    if (player) {
+      socket.emit("playerUpdate", player)
+    }
+  })
+
   watch(spotifyUser, () => {
     if (!socket && spotifyUser?.value?.email) {
       socket = io(
-          useRuntimeConfig().public.websocketServerEndpoint || "http://localhost:5174", {
-        transports: ["websocket"],
-        path: `/${spotifyUser.value.email}/`,
-      })
+        useRuntimeConfig().public.websocketServerEndpoint || "http://localhost:5174", {
+          transports: ["websocket"],
+          path: `/${spotifyUser.value.email}/`,
+        })
       socket.on("connect", () => {
         console.log("WebSocket Connected", socket.id)
       })
@@ -49,7 +54,7 @@ export default defineNuxtPlugin((nuxtApp) => {
           appStore.$state.smsNumber = data
         }
       })
-      if(useRuntimeConfig().public.voting) {
+      if (useRuntimeConfig().public.voting) {
         socket.on("newVote", (data) => {
           // console.log(`vote received: ${JSON.stringify(data)}`, )
           // socket.emit("vote", {data})
