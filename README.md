@@ -8,6 +8,11 @@ If everything is set up correctly, you should be able to log in with your Spotif
 
 Click the "Now Playing" area at the bottom to open a full screen "Now Playing" view.
 
+https://user-images.githubusercontent.com/156414/229391285-b57874bb-9fed-42fa-93b5-0ba07ea4e9f3.mp4
+
+You can also browse your playlists:
+
+![partytime](https://user-images.githubusercontent.com/156414/229391479-0971e728-145d-4db2-8884-4bccb9ea07d1.png)
 
 ## Spotify Setup
 
